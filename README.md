@@ -84,19 +84,26 @@ keys must be unique but we need multiple commit lines.
 # Recipes
 
 ### default
-The default recipe creates a firewall resource with action install, and if `node['firewall']['allow_ssh']`, opens port 22 from the world.
+The default recipe creates a firewall resource with action install.
+
+### disable_firewall
+Used to disable platform specific firewall. Many clouds have their own firewall configured outside of the OS instance such as AWS Security Groups.
 
 # Attributes
 
 * `default['firewall']['allow_ssh'] = false`, set true to open port 22 for SSH when the default recipe runs
 * `default['firewall']['allow_mosh'] = false`, set to true to open UDP ports 60000 - 61000 for [Mosh][0] when the default recipe runs
 * `default['firewall']['allow_winrm'] = false`, set true to open port 5989 for WinRM when the default recipe runs
+* `default['firewall']['allow_loopback'] = false`, set to true to allow all traffic on the loopback interface
+* `default['firewall']['allow_icmp'] = false`, set true to allow icmp protocol on supported OSes (note: ufw and windows implementations don't support this)
 
 * `default['firewall']['ubuntu_iptables'] = false`, set to true to use iptables on Ubuntu / Debian when using the default recipe
 * `default['firewall']['redhat7_iptables'] = false`, set to true to use iptables on Red Hat / CentOS 7 when using the default recipe
 
 * `default['firewall']['ufw']['defaults']` hash for template `/etc/default/ufw`
 * `default['firewall']['iptables']['defaults']` hash for default policies for 'filter' table's chains`
+
+* `default['firewall']['windows']['defaults']` hash to define inbound / outbound firewall policy on Windows platform
 
 * `default['firewall']['allow_established'] = true`, set to false if you don't want a related/established default rule on iptables
 * `default['firewall']['ipv6_enabled'] = true`, set to false if you don't want IPv6 related/established default rule on iptables (this enables ICMPv6, which is required for much of IPv6 communication)
@@ -123,6 +130,7 @@ The default recipe creates a firewall resource with action install, and if `node
 - `rules`: This is used internally for firewall_rule resources to append their rules. You should NOT touch this value unless you plan to supply an entire firewall ruleset at once, and skip using firewall_rule resources.
 - `disabled_zone` (firewalld only): The zone to set on firewalld when the firewall should be disabled. Can be any string in symbol form, e.g. :public, :drop, etc. Defaults to `:public.`
 - `enabled_zone` (firewalld only): The zone to set on firewalld when the firewall should be enabled. Can be any string in symbol form, e.g. :public, :drop, etc. Defaults to `:drop.`
+- `package_options`: Used to pass options to the package install of firewall
 
 #### Examples
 
